@@ -14,8 +14,6 @@ const builder = new addonBuilder(manifest)
 
 builder.defineStreamHandler(({ type, id }) => {
 
-    const imdb = id.split(":")[0]
-
     let url
 
     if (type === "movie") {
@@ -36,4 +34,4 @@ builder.defineStreamHandler(({ type, id }) => {
 
 const addonInterface = builder.getInterface()
 
-serveHTTP(addonInterface, { port: 7000 })
+serveHTTP(addonInterface, { port: process.env.PORT || 7000 })
