@@ -1,4 +1,7 @@
 const { addonBuilder, serveHTTP } = require("stremio-addon-sdk")
+const https = require("https")
+
+const TMDB_API = "YOUR_TMDB_API_KEY"
 
 const manifest = {
     id: "org.cineby.vidking",
@@ -12,24 +15,68 @@ const manifest = {
 
 const builder = new addonBuilder(manifest)
 
-builder.defineStreamHandler(({ type, id }) => {
+function imdbToTmdb(imdbId) {
+    return new Promise((resolve, reject) => {
+
+        const url = `https://api.themoviedb.org/3/find/${imdbId}?api_key=${TMDB_API}&external_source=imdb_id`
+
+        https.get(url, (res) => {
+
+            let data = ""
+
+            res.on("data", chunk => data += chunk)
+
+            res.on("end", () => {
+
+                const json = JSON.parse(data)
+
+                if (json.movie_results.length > 0)
+                    resolve(json.movie_results[0].id)
+
+                else if (json.tv_results.length > 0)
+                    resolve(json.tv_results[0].id)
+
+                else
+                    resolve(null)
+
+            })
+
+        }).on("error", reject)
+
+    })
+}
+
+builder.defineStreamHandler(async ({ type, id }) => {
+
+    const imdb = id.split(":")[0]
+
+    const tmdb = await imdbToTmdb(imdb)
+
+    if (!tmdb)
+        return { streams: [] }
 
     let url
 
     if (type === "movie") {
-        url = "https://www.vidking.net/embed/movie/1078605"
+        url = `https://www.vidking.net/embed/movie/${tmdb}`
     } else {
-        url = "https://www.vidking.net/embed/tv/119051/1/1"
+
+        const parts = id.split(":")
+        const season = parts[1]
+        const episode = parts[2]
+
+        url = `https://www.vidking.net/embed/tv/${tmdb}/${season}/${episode}`
     }
 
-    return Promise.resolve({
+    return {
         streams: [
             {
                 title: "Cineby (Vidking)",
                 url: url
             }
         ]
-    })
+    }
+
 })
 
 const addonInterface = builder.getInterface()
