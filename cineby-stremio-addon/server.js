@@ -1,85 +1,40 @@
-const { addonBuilder } = require("stremio-addon-sdk")
+const { AddonBuilder } = require("stremio-addon-sdk")
 const http = require("http")
-const https = require("https")
 
-const manifest = require("./manifest.json")
-
-const TMDB_API_KEY = "PASTE_YOUR_TMDB_API_KEY"
-
-const builder = new addonBuilder(manifest)
-
-function imdbToTmdb(imdb) {
-  return new Promise((resolve) => {
-
-    const url =
-      "https://api.themoviedb.org/3/find/" +
-      imdb +
-      "?api_key=" +
-      TMDB_API_KEY +
-      "&external_source=imdb_id"
-
-    https.get(url, (res) => {
-
-      let data = ""
-
-      res.on("data", (chunk) => data += chunk)
-
-      res.on("end", () => {
-
-        try {
-          const json = JSON.parse(data)
-
-          if (json.movie_results.length)
-            return resolve(json.movie_results[0].id)
-
-          if (json.tv_results.length)
-            return resolve(json.tv_results[0].id)
-
-        } catch (e) {}
-
-        resolve(null)
-      })
-    })
-  })
+const manifest = {
+  id: "org.cineby.vidking",
+  version: "1.0.0",
+  name: "Cineby",
+  description: "Watch movies from Cineby",
+  resources: ["stream"],
+  types: ["movie","series"],
+  idPrefixes: ["tt"],
+  catalogs: []
 }
 
-builder.defineStreamHandler(async ({ type, id }) => {
+const builder = new AddonBuilder(manifest)
 
-  const imdb = id.split(":")[0]
-  const tmdb = await imdbToTmdb(imdb)
-
-  if (!tmdb) return { streams: [] }
+builder.defineStreamHandler(({ type }) => {
 
   let url
 
   if (type === "movie") {
-    url = "https://www.vidking.net/embed/movie/" + tmdb
+    url = "https://www.vidking.net/embed/movie/1078605"
   } else {
-    const parts = id.split(":")
-    const season = parts[1]
-    const episode = parts[2]
-
-    url =
-      "https://www.vidking.net/embed/tv/" +
-      tmdb +
-      "/" +
-      season +
-      "/" +
-      episode
+    url = "https://www.vidking.net/embed/tv/119051/1/1"
   }
 
-  return {
+  return Promise.resolve({
     streams: [
       {
         title: "Cineby (Vidking)",
         url: url
       }
     ]
-  }
-
+  })
 })
 
-const port = process.env.PORT || 7000
+const port = 7000
 
 http.createServer(builder.getInterface()).listen(port)
 
