@@ -1,1 +1,36 @@
+const { addonBuilder } = require("stremio-addon-sdk")
 
+const manifest = {
+  id: "org.cineby.vidking",
+  version: "1.0.0",
+  name: "Cineby",
+  description: "Streams from Cineby using Vidking player",
+  resources: ["stream"],
+  types: ["movie", "series"],
+  idPrefixes: ["tt"]
+}
+
+const builder = new addonBuilder(manifest)
+
+builder.defineStreamHandler(({ type, id }) => {
+
+  const imdb = id.split(":")[0]
+
+  // For now we will just return a test stream
+  return Promise.resolve({
+    streams: [
+      {
+        title: "Cineby Test",
+        url: "https://www.vidking.net/embed/movie/1078605"
+      }
+    ]
+  })
+})
+
+const addonInterface = builder.getInterface()
+
+require("http")
+  .createServer(addonInterface)
+  .listen(7000)
+
+console.log("Addon running at http://localhost:7000/manifest.json")
