@@ -1,1 +1,10 @@
-
+{
+  "id": "org.cineby.vidking",
+  "version": "1.0.0",
+  "name": "Cineby",
+  "description": "Streams from Cineby using Vidking player",
+  "resources": ["stream"],
+  "types": ["movie", "series"],
+  "catalogs": [],
+  "idPrefixes": ["tt"]
+}
