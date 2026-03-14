@@ -1,15 +1,11 @@
 {
   "name": "cineby-stremio-addon",
   "version": "1.0.0",
-  "description": "Cineby Stremio addon using Vidking player",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "stremio-addon-sdk": "^1.6.10"
-  },
-  "engines": {
-    "node": ">=14"
   }
 }
