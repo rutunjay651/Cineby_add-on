@@ -2,18 +2,9 @@ const { addonBuilder } = require("stremio-addon-sdk")
 const http = require("http")
 const https = require("https")
 
-const TMDB_API_KEY = "e4598ac9cb6d28883dac12852c670c5a"
+const manifest = require("./manifest.json")
 
-const manifest = {
-  id: "org.cineby.vidking",
-  version: "1.0.0",
-  name: "Cineby",
-  description: "Watch movies and series from Cineby",
-  resources: ["stream"],
-  types: ["movie", "series"],
-  idPrefixes: ["tt"],
-  catalogs: []   // REQUIRED by Stremio
-}
+const TMDB_API_KEY = "PASTE_YOUR_TMDB_API_KEY"
 
 const builder = new addonBuilder(manifest)
 
@@ -31,7 +22,7 @@ function imdbToTmdb(imdb) {
 
       let data = ""
 
-      res.on("data", (chunk) => (data += chunk))
+      res.on("data", (chunk) => data += chunk)
 
       res.on("end", () => {
 
@@ -64,7 +55,6 @@ builder.defineStreamHandler(async ({ type, id }) => {
   if (type === "movie") {
     url = "https://www.vidking.net/embed/movie/" + tmdb
   } else {
-
     const parts = id.split(":")
     const season = parts[1]
     const episode = parts[2]
@@ -86,12 +76,11 @@ builder.defineStreamHandler(async ({ type, id }) => {
       }
     ]
   }
+
 })
 
 const port = process.env.PORT || 7000
 
-http
-  .createServer(builder.getInterface())
-  .listen(port, () => {
-    console.log("Addon running on port " + port)
-  })
+http.createServer(builder.getInterface()).listen(port)
+
+console.log("Addon running on port " + port)
