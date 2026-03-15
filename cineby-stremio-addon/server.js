@@ -1,41 +1,45 @@
-const { AddonBuilder } = require("stremio-addon-sdk")
-const http = require("http")
+const http = require("http");
+
+const PORT = 7000;
 
 const manifest = {
   id: "org.cineby.vidking",
   version: "1.0.0",
   name: "Cineby",
-  description: "Watch movies from Cineby",
+  description: "Cineby streams via Vidking",
   resources: ["stream"],
-  types: ["movie","series"],
+  types: ["movie", "series"],
   idPrefixes: ["tt"],
   catalogs: []
-}
+};
 
-const builder = new AddonBuilder(manifest)
+const server = http.createServer((req, res) => {
 
-builder.defineStreamHandler(({ type }) => {
-
-  let url
-
-  if (type === "movie") {
-    url = "https://www.vidking.net/embed/movie/1078605"
-  } else {
-    url = "https://www.vidking.net/embed/tv/119051/1/1"
+  if (req.url === "/manifest.json") {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify(manifest));
+    return;
   }
 
-  return Promise.resolve({
-    streams: [
-      {
-        title: "Cineby (Vidking)",
-        url: url
-      }
-    ]
-  })
-})
+  if (req.url.startsWith("/stream/")) {
+    const streamResponse = {
+      streams: [
+        {
+          title: "Cineby (Vidking)",
+          url: "https://www.vidking.net/embed/movie/1078605"
+        }
+      ]
+    };
 
-const port = 7000
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify(streamResponse));
+    return;
+  }
 
-http.createServer(builder.getInterface()).listen(port)
+  res.writeHead(404);
+  res.end("Not found");
+});
 
-console.log("Addon running on port " + port)
+server.listen(PORT, "0.0.0.0", () => {
+  console.log("Addon running at http://localhost:" + PORT);
+});
