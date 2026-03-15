@@ -3,7 +3,7 @@ const https = require("https")
 
 const PORT = process.env.PORT || 7000
 
-const TMDB_API_KEY = "PASTE_YOUR_TMDB_API_KEY"
+const TMDB_API_KEY = "UJL9E8CG8JNUEKJNJD7BEBNNJGPPVGEL"
 
 const manifest = {
   id: "org.cineby.vidking",
