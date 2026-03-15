@@ -2,16 +2,7 @@ const http = require("http");
 
 const PORT = 7000;
 
-const manifest = {
-  id: "org.cineby.vidking",
-  version: "1.0.0",
-  name: "Cineby",
-  description: "Cineby streams via Vidking",
-  resources: ["stream"],
-  types: ["movie", "series"],
-  idPrefixes: ["tt"],
-  catalogs: []
-};
+const manifest = require("./manifest.json");
 
 const server = http.createServer((req, res) => {
 
@@ -22,7 +13,7 @@ const server = http.createServer((req, res) => {
   }
 
   if (req.url.startsWith("/stream/")) {
-    const streamResponse = {
+    const response = {
       streams: [
         {
           title: "Cineby (Vidking)",
@@ -32,7 +23,7 @@ const server = http.createServer((req, res) => {
     };
 
     res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify(streamResponse));
+    res.end(JSON.stringify(response));
     return;
   }
 
@@ -41,5 +32,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, "0.0.0.0", () => {
-  console.log("Addon running at http://localhost:" + PORT);
+  console.log("Addon running on port " + PORT);
 });
