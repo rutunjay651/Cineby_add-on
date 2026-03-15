@@ -9,7 +9,14 @@ const builder = new addonBuilder(manifest)
 function fetch(url) {
     return new Promise((resolve, reject) => {
 
-        https.get(url, (res) => {
+        const options = {
+            headers: {
+                "User-Agent": "Mozilla/5.0",
+                "Referer": "https://www.vidking.net/"
+            }
+        }
+
+        https.get(url, options, (res) => {
 
             let data = ""
 
