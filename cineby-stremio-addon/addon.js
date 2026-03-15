@@ -54,7 +54,7 @@ async function extractStream(embedUrl) {
 
     const html = await fetch(embedUrl)
 
-    const match = html.match(/https?:\/\/[^"]+\.m3u8[^"]*/)
+    const match = html.match(/https?:\/\/[^"' ]+\.m3u8[^"' ]*/)
 
     if (match)
         return match[0]
