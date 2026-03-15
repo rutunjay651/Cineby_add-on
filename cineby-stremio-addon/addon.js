@@ -108,8 +108,17 @@ builder.defineStreamHandler(async ({ type, id }) => {
 
     const streamUrl = await extractStream(embedUrl)
 
-    if (!streamUrl)
-        return { streams: [] }
+    if (!streamUrl) {
+    return {
+        streams: [
+            {
+                title: "Cineby Test",
+                url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+                type: "hls"
+            }
+        ]
+    }
+}
 
     return {
         streams: [
