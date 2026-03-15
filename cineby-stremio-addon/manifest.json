@@ -2,9 +2,9 @@
   "id": "org.cineby.vidking",
   "version": "1.0.0",
   "name": "Cineby",
-  "description": "Watch movies and series from Cineby",
+  "description": "Cineby streams via Vidking",
   "resources": ["stream"],
   "types": ["movie", "series"],
-  "catalogs": [],
-  "idPrefixes": ["tt"]
+  "idPrefixes": ["tt"],
+  "catalogs": []
 }
