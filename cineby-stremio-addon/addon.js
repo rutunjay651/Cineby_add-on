@@ -67,7 +67,7 @@ async function extractStream(embedUrl) {
 
     console.log("Embed page length:", html.length)
 
-    const match = html.match(/https?:\/\/[^"' ]+\.(m3u8|mp4)[^"' ]*/)
+    const match = html.match(/https?:\\?\/\\?\/[^"' ]+\.(m3u8|mp4|mkv)[^"' ]*/)
 
     if (match) {
         console.log("Detected stream:", match[0])
