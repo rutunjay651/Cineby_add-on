@@ -16,16 +16,27 @@ function fetch(url) {
             }
         }
 
-        https.get(url, options, (res) => {
+        const req = https.get(url, options, (res) => {
+
+            // follow redirects
+            if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+                return resolve(fetch(res.headers.location))
+            }
 
             let data = ""
 
             res.on("data", chunk => data += chunk)
 
             res.on("end", () => resolve(data))
+        })
 
-        }).on("error", reject)
+        req.on("error", reject)
 
+        // timeout protection
+        req.setTimeout(10000, () => {
+            req.destroy()
+            reject(new Error("Request timeout"))
+        })
     })
 }
 
@@ -54,10 +65,14 @@ async function extractStream(embedUrl) {
 
     const html = await fetch(embedUrl)
 
-    const match = html.match(/https?:\/\/[^"' ]+\.m3u8[^"' ]*/)
+    console.log("Embed page length:", html.length)
 
-    if (match)
+    const match = html.match(/https?:\/\/[^"' ]+\.(m3u8|mp4)[^"' ]*/)
+
+    if (match) {
+        console.log("Detected stream:", match[0])
         return match[0]
+    }
 
     return null
 }
@@ -101,7 +116,7 @@ builder.defineStreamHandler(async ({ type, id }) => {
             {
                 title: "Cineby 1080p",
                 url: streamUrl,
-                type: "hls"
+                type: streamUrl.includes(".m3u8") ? "hls" : "mp4"
             }
         ]
     }
