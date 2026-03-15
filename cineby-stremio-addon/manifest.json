@@ -6,5 +6,8 @@
   "resources": ["stream"],
   "types": ["movie", "series"],
   "idPrefixes": ["tt"],
-  "catalogs": []
+  "catalogs": [],
+  "behaviorHints": {
+    "configurable": false
+  }
 }
